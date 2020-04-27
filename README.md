@@ -11,7 +11,7 @@
 ### 2. Config 
 
 ```java
-cd ./CidanaTestPlatformRelease/scripts
+cd ./CidanaTestPlatformRelease/scripts && sudo chmod +x *
 sudo ./config -c {xyz}     // Where `{xyz}` is a placeholder, please replace it with actual config name before executing
 ```
 
@@ -27,3 +27,4 @@ sudo ./launch.sh -c {HOMNE_DIR}/CidanaTestPlatformRelease/scripts/../confs/{xyz}
 
    Please copy and run it to start the deploy process
 
+> NOTICE: append option -u to deploy command will make the shell script to download newest docker images
