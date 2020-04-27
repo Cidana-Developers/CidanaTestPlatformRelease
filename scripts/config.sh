@@ -83,7 +83,7 @@ if [ -d ${cfg_root_dir} ]; then
 fi
 
 # grab the IP address of this machine
-this_machine=`ip addr | grep inet | grep -v inet6 | grep -E "global (dynamic)+ ens" | awk '{print $2}' |awk -F "/" '{print $1}'`
+this_machine=`ip addr | grep inet | grep -v inet6 | grep -E "global( dynamic)? ens[0-9]*" | awk '{print $2}' |awk -F "/" '{print $1}'`
 # echo "this_machine: ${this_machine}"
 if [ ! -n "${this_machine}" ]; then
     echo -e "\033[1;30m Failed to get current machind IP \033[0m"
