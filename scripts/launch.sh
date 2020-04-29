@@ -397,9 +397,8 @@ web_home=`cat ${cfgfile} | grep "web_site" | cut -d"\"" -f2`
 if [ -n "${web_home}" ]; then
     echo -e "-----------------------------------------------------------------------------"
     echo -e "\n Now, you can access the CTP system via \033[1;35m ${web_home} \033[0m\n"
-    echo -e " Please copy above CTP entrance URL and open it in any browser"
-    echo -e " [Test account] \n"
-    echo -e "   user: guest01, default password: 123\n"
+    echo -e " Please copy above CTP entrance URL and open it in any browser\n"
+    echo -e " [default account] user: guest01, password: 123\n"
     echo -e " Enjoy!"
     echo -e "-----------------------------------------------------------------------------"
 fi
