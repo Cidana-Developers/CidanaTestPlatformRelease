@@ -79,7 +79,7 @@ Please check if your test machine meet following requirements
 ### Config (optional)
 
 ```shell
-   cd ./CidanaTestPlatformRelease/scripts && sudo chmod +x * && sudo ./config.sh -c {xyz}     
+   cd ./CidanaTestPlatformRelease/scripts && sudo chmod +x *.sh && sudo ./config.sh -c {xyz}     
 ```
 
    * Where `{xyz}` is a placeholder, please replace it with real config name
