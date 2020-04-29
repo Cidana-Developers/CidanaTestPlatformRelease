@@ -1,8 +1,12 @@
 ###### Cidana Test Platform
 
-# Deploy CTPR
+# Deploy CTP
 
+##### CTP
 `CTP` (Cidana Test Platform) is a test system to test and measure the video dec/enc from multi-perspectives, like coverage, conformance & performance.
+
+##### CTPR
+`CTPR` is `CTP` release package
 
 This document will guide you to deploy the `CTP` in your test machine, step by step
 
@@ -77,8 +81,6 @@ Please check if your test machine meet following requirements
 ```shell
    cd ./CidanaTestPlatformRelease/scripts && sudo chmod +x * && sudo ./config.sh -c {xyz}     
 ```
-
-> NOTICE:  
 
    * Where `{xyz}` is a placeholder, please replace it with real config name
    * Config is only required for 1st time, if you try to deploy again it could be skipped since the configuration is ready
