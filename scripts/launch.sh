@@ -397,6 +397,7 @@ web_home=`cat ${cfgfile} | grep "web_site" | cut -d"\"" -f2`
 if [ -n "${web_home}" ]; then
     echo -e "-----------------------------------------------------------------------------"
     echo -e "\n Now, you can access the CTP system via \033[1;35m ${web_home} \033[0m\n"
+    echo -e " Please copy above CTP entrance URL and open it in any browser, enjoy!"
     echo -e "-----------------------------------------------------------------------------"
 fi
 
