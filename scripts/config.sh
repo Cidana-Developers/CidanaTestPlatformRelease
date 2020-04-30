@@ -219,6 +219,6 @@ echo -e "    ${cfgfile}\033[0m     --> \033[1;32mProcessed\033[0m"
 echo -e "\n \033[42;30m all config files generate successfully \033[0m"
 
 echo -e "\n Now, please copy the following command and run it to start the CTP deploy procese\n"
-echo -e "\033[0;32m sudo ./launch.sh -c $PWD/${cfg_root_dir} -t ~/ctp -p ${target_port} \033[0m\n"
+echo -e "\033[0;32m sudo ./launch.sh -c $PWD/${cfg_root_dir} -t ~/ctp -p ${target_port} -u \033[0m\n"
 
 exit 0
