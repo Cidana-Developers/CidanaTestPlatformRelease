@@ -281,6 +281,31 @@ fi
 echo "Remove the temp download dir ${download_dir}"
 rm -rf ${download_dir}
 
+#-----------------------------------------------------------------------------
+#   deploy awcy source code of svt-av1
+# 
+echo -e "\033[1;35m Step ${step}: Deploy awcy cache data ...\033[0m";
+((step += 1))
+
+awcy_src_dir=${tar_root}/awcy/data/src
+awcy_cache=${cfg_root_dir}/../../3rd-party/awcy.tar.gz
+echo "awcy_cache: ${awcy_cache}"
+if [ -f ${awcy_cache} ]; then 
+    echo -e " awcy cache    --> [\033[1;32m Found \033[0m]"
+    cmd="tar zxf ${awcy_cache} -C ${tar_root}"
+
+    echo "${cmd}";
+    eval ${cmd}
+    res=$?
+    if [ ${res} -ne 0 ]; then
+        echo -e " deploy awcy cache data    --> [\033[1;31m Fail, err:${res} \033[0m]"
+        exit -4
+    fi
+    echo -e " deploy awcy cache data    --> [\033[1;32m OK \033[0m]"
+else
+    echo -e " awcy cache    --> [\033[1;31m Not Found \033[0m]"
+fi
+
 # exit 0;
 
 #-----------------------------------------------------------------------------
