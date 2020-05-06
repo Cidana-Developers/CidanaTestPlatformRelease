@@ -83,7 +83,7 @@ if [ -d ${cfg_root_dir} ]; then
 fi
 
 # grab the IP address of this machine
-this_machine=`ip addr | grep inet | grep -v inet6 | grep -E "global( dynamic)? ens[0-9]*" | awk '{print $2}' |awk -F "/" '{print $1}'`
+this_machine=`ip addr | grep inet | grep -v inet6 | grep -E "global( dynamic)?( [a-zA-Z]*)? ens[0-9]*" | awk '{print $2}' |awk -F "/" '{print $1}'`
 # echo "this_machine: ${this_machine}"
 if [ ! -n "${this_machine}" ]; then
     echo -e "\033[1;30m Failed to get current machind IP \033[0m"
@@ -218,7 +218,7 @@ echo -e "    ${cfgfile}\033[0m     --> \033[1;32mProcessed\033[0m"
 
 echo -e "\n \033[42;30m all config files generate successfully \033[0m"
 
-echo -e "\n Now, you can deploy the CTP by following command"
-echo -e "\033[0;32m     sudo ./launch.sh -c $PWD/${cfg_root_dir} -t ~/ctp -p ${target_port} \033[0m\n"
+echo -e "\n Now, please copy the following command and run it to start the CTP deploy procese\n"
+echo -e "\033[0;32m sudo ./launch.sh -c $PWD/${cfg_root_dir} -t ~/ctp -p ${target_port} -u \033[0m\n"
 
 exit 0
