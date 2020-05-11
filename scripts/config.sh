@@ -4,6 +4,9 @@ echo "file name  :" $0;
 echo "argu count :" $#;
 echo "arguments  :" $*;
 
+shell_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"  # dir of shell script
+echo "shell dir  :" ${shell_dir}
+
 help=0;
 if [ $# -ne 2 ]; then
     help=1;

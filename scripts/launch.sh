@@ -4,6 +4,9 @@ echo "file name  :" $0;
 echo "argu count :" $#;
 echo "arguments  :" $*;
 
+shell_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"  # dir of shell script
+echo "shell dir  :" ${shell_dir}
+
 help=0;
 if [ $# -eq 0 ]; then
     help=1;
@@ -95,37 +98,37 @@ cfg_files_ok=1
 # echo "config root dir: ${cfg_root_dir}";
 echo -e "\033[1;35m Step ${step}: Validating config root dir: ${cfg_root_dir} ...\033[0m"
 ((step += 1)) 
-file=${cfg_root_dir}/data_service_api/conf/app.conf
+file=data_service_api/conf/app.conf
 # echo "${file}"
-if [ ! -f "$file" ]; then
-    echo -e "${file}    --> \033[31mNot found\033[0m";
+if [ ! -f "${cfg_root_dir}/$file" ]; then
+    echo -e "${cfg_root_dir}\033[1;37m/${file}\033[0m    --> [\033[31m Not Found \033[0m]";
     cfg_files_ok=0;
 else
-    echo -e "${file}    --> \033[32mOK\033[0m";
+    echo -e "${cfg_root_dir}\033[1;37m/${file}\033[0m    --> [\033[32m OK \033[0m]";
 fi
 
-file=${cfg_root_dir}/web_ui/www/apiCfg.php
-if [ ! -f "$file" ]; then
-    echo -e "${file}    --> \033[31mNot found\033[0m";
+file=web_ui/www/apiCfg.php
+if [ ! -f "${cfg_root_dir}/$file" ]; then
+    echo -e "${cfg_root_dir}\033[1;37m/${file}\033[0m    --> [\033[31m Not found \033[0m]";
     cfg_files_ok=0;
 else
-    echo -e "${file}    --> \033[32mOK\033[0m";
+    echo -e "${cfg_root_dir}\033[1;37m/${file}\033[0m    --> [\033[32m OK \033[0m]";
 fi
 
-file=${cfg_root_dir}//web_ui/nginx/conf/nginx.conf
-if [ ! -f "$file" ]; then
-    echo -e "${file}    --> \033[31mNot found\033[0m";
+file=web_ui/nginx/conf/nginx.conf
+if [ ! -f "${cfg_root_dir}/$file" ]; then
+    echo -e "${cfg_root_dir}\033[1;37m/${file}\033[0m    --> [\033[31m Not found \033[0m]";
     cfg_files_ok=0;
 else
-    echo -e "${file}    --> \033[32mOK\033[0m";
+    echo -e "${cfg_root_dir}\033[1;37m/${file}\033[0m    --> [\033[32m OK \033[0m]";
 fi
 
-file=${cfg_root_dir}//web_ui/nginx/conf.d/default.conf
-if [ ! -f "$file" ]; then
-    echo -e "${file}    --> \033[31mNot found\033[0m";
+file=web_ui/nginx/conf.d/default.conf
+if [ ! -f "${cfg_root_dir}/$file" ]; then
+    echo -e "${cfg_root_dir}\033[1;37m/${file}\033[0m    --> [\033[31m Not found \033[0m]";
     cfg_files_ok=0;
 else
-    echo -e "${file}    --> \033[32mOK\033[0m";
+    echo -e "${cfg_root_dir}\033[1;37m/${file}\033[0m    --> [\033[32m OK \033[0m]";
 fi
 
 # Add here to check other config files
@@ -140,46 +143,70 @@ fi
 # 
 echo -e "\033[1;35m Step ${step}: Check Target Root: ${tar_root} ...\033[0m";
 ((step += 1))
-if [ -d "${tar_root}" ]; then
-    echo "Delete ${tar_root}";
-    rm -rf ${tar_root}
-fi
-dir1=${tar_root}/data_service_api/conf
-echo "create ${dir1}";
-mkdir -p ${dir1}
-dir1=${tar_root}/web_ui/www
-echo "create ${dir1}";
-mkdir -p ${dir1}
 
-echo "Copy config files to ${tar_root} ...";
+if [ -d "${tar_root}" ]; then
+    msg=" delete \033[1;37m${tar_root}\033[0m   "
+    rm -rf ${tar_root}
+    if [ $? -ne 0 ]; then
+        echo -e "${msg}--> [\033[31m Fail \033[0m]";
+    else
+        echo -e "${msg}--> [\033[32m OK \033[0m]";
+    fi
+fi
+
+dir1=${tar_root}/data_service_api/conf
+msg=" create \033[1;37m${dir1}\033[0m   "
+mkdir -p ${dir1}
+if [ $? -ne 0 ]; then
+    echo -e "${msg}--> [\033[31m Fail \033[0m]";
+else
+    echo -e "${msg}--> [\033[32m OK \033[0m]";
+fi
+
+dir1=${tar_root}/web_ui/www
+msg=" create \033[1;37m${dir1}\033[0m   "
+mkdir -p ${dir1}
+if [ $? -ne 0 ]; then
+    echo -e "${msg}--> [\033[31m Fail \033[0m]";
+else
+    echo -e "${msg}--> [\033[32m OK \033[0m]";
+fi
+
+echo -e " Copy config files to \033[1;37m${tar_root}\033[0m ...";
 # API service config file
 file=app.conf
 dir1=data_service_api/conf
-echo "${dir1}/${file}";
+msg="   file \033[1;37m${dir1}/${file}\033[0m   "
 cp ${cfg_root_dir}/${dir1}/${file} ${tar_root}/${dir1}/${file}
-if [ $? -ne 0 ]; then
-    echo -e "\033[1;31mError: failed to copy ${dir1}/${file} \033[0m";
+res=$?
+if [ ${res} -ne 0 ]; then
+    echo -e "${msg}--> [\033[31m Fail: ${res} \033[0m]";
     exit -2;
 fi
+echo -e "${msg}--> [\033[32m OK \033[0m]";
 
 # web config file
 file=apiCfg.php
 dir1=web_ui/www
-echo "${dir1}/${file}";
+msg="   file \033[1;37m${dir1}/${file}\033[0m   "
 cp ${cfg_root_dir}/${dir1}/${file} ${tar_root}/${dir1}/${file}
-if [ $? -ne 0 ]; then
-    echo -e "\033[1;31mError: failed to copy ${dir1}/${file} \033[0m";
+res=$?
+if [ ${res} -ne 0 ]; then
+    echo -e "${msg}--> [\033[31m Fail: ${res} \033[0m]";
     exit -2;
 fi
+echo -e "${msg}--> [\033[32m OK \033[0m]";
 
 # nginx config file
 dir1=web_ui/nginx
-echo "${dir1}";
+msg="   dir  \033[1;37m${dir1}\033[0m   "
 cp -r ${cfg_root_dir}/${dir1} ${tar_root}/${dir1}
-if [ $? -ne 0 ]; then
-    echo -e "\033[1;31mError: failed to copy ${dir1} \033[0m";
+res=$?
+if [ ${res} -ne 0 ]; then
+    echo -e "${msg}--> [\033[31m Fail: ${res} \033[0m]";
     exit -2;
 fi
+echo -e "${msg}--> [\033[32m OK \033[0m]";
 
 # exit 0;
 if [ ${dl_dockerimg} -eq 1 ]; then
@@ -190,7 +217,7 @@ if [ ${dl_dockerimg} -eq 1 ]; then
     ((step += 1))
 
     # DB server
-    echo -e "\033[1;36mdocker pull mysql:5.7 ...\033[0m";
+    echo -e "\033[0;36mdocker pull \033[1;36mmysql:5.7\033[0m ...";
     docker pull mysql:5.7
     if [ $? -ne 0 ]; then
         echo -e "\033[1;31mError: failed to download mysql:5.7\033[0m";
@@ -198,7 +225,7 @@ if [ ${dl_dockerimg} -eq 1 ]; then
     fi
 
     # DB initializer
-    echo -e "\033[1;36mdocker pull cidana/db_initializer ...\033[0m"
+    echo -e "\033[0;36mdocker pull \033[1;36mcidana/db_initializer\033[0m ..."
     docker pull cidana/db_initializer
     if [ $? -ne 0 ]; then
         echo -e "\033[1;31mError: failed to download db_initializer\033[0m";
@@ -206,7 +233,7 @@ if [ ${dl_dockerimg} -eq 1 ]; then
     fi
 
     # API service
-    echo -e "\033[1;36mdocker pull cidana/data_service ...\033[0m"
+    echo -e "\033[0;36mdocker pull \033[1;36mcidana/data_service\033[0m ..."
     docker pull cidana/data_service
     if [ $? -ne 0 ]; then
         echo -e "\033[1;31mError: failed to download data_service\033[0m";
@@ -214,7 +241,7 @@ if [ ${dl_dockerimg} -eq 1 ]; then
     fi
 
     # PHP web service
-    echo -e "\033[1;36mdocker pull cidana/php_web_service ...\033[0m"
+    echo -e "\033[0;36mdocker pull \033[1;36mcidana/php_web_service\033[0m ..."
     docker pull cidana/php_web_service
     if [ $? -ne 0 ]; then
         echo -e "\033[1;31mError: failed to download php_web_service\033[0m";
@@ -222,7 +249,7 @@ if [ ${dl_dockerimg} -eq 1 ]; then
     fi
 
     # Nginx web service
-    echo -e "\033[1;36mdocker pull cidana/nginx_web_service ...\033[0m"
+    echo -e "\033[0;36mdocker pull \033[1;36mcidana/nginx_web_service\033[0m ..."
     docker pull cidana/nginx_web_service
     if [ $? -ne 0 ]; then
         echo -e "\033[1;31mError: failed to download nginx_web_service\033[0m";
@@ -230,7 +257,7 @@ if [ ${dl_dockerimg} -eq 1 ]; then
     fi
 
     # AWCY service
-    echo -e "\033[1;36mdocker pull cidana/awcy ...\033[0m"
+    echo -e "\033[0;36mdocker pull \033[1;36mcidana/awcy\033[0m ..."
     docker pull cidana/awcy
     if [ $? -ne 0 ]; then
         echo -e "\033[1;31mError: failed to download awcy\033[0m";
@@ -238,48 +265,178 @@ if [ ${dl_dockerimg} -eq 1 ]; then
     fi
 fi
 
-# exit 0
-
+x=1     # debug proposal
+if [ ${x} == 1 ]; then
 #-----------------------------------------------------------------------------
 #   deploy awcy media files
 # 
-awcy_media_dir=${tar_root}/awcy/media/
-echo -e "\033[1;36mdeploy media files to ${awcy_media_dir} ...\033[0m"
-if [ ! -d ${awcy_media_dir} ]; then
-    echo "${awcy_media_dir} not exist, create ";
-    mkdir -p ${awcy_media_dir}
-fi
-
-download_dir=${tar_root}/download
 echo -e "\033[1;35m Step ${step}: Deploy awcy media files ...\033[0m";
 ((step += 1))
 
+awcy_media_dir=${tar_root}/awcy/media/
+# echo -e "\033[1;36mdeploy media files to ${awcy_media_dir} ...\033[0m"
+msg="   target media dir \033[1;37m${awcy_media_dir}\033[0m   "
+if [ ! -d ${awcy_media_dir} ]; then
+    # echo -e "   \033[1;37m${awcy_media_dir}\033[0m   --> [\033[33m Not Exist \033[0m]";
+    mkdir -p ${awcy_media_dir}
+    res=$?
+    if [ ${res} -ne 0 ]; then
+        echo -e "${msg}--> [\033[31m Creat Fail \033[0m]";
+        exit -2;
+    fi
+    echo -e "${msg}--> [\033[32m Creat Ok \033[0m]";
+else
+    echo -e "${msg}--> [\033[32m Exist \033[0m]";
+fi
+
+download_dir=${tar_root}/download
+msg="   download dir \033[1;37m${download_dir}\033[0m   "
 if [ ! -d ${download_dir} ]; then
-    echo "${download_dir} not exist, create ";
+    # echo "${download_dir} not exist, create ";
     mkdir -p ${download_dir}
+    res=$?
+    if [ ${res} -ne 0 ]; then
+        echo -e "${msg}--> [\033[31m Creat Fail \033[0m]";
+        exit -2;
+    fi
+    echo -e "${msg}--> [\033[32m Creat Ok \033[0m]";
+else
+    echo -e "${msg}--> [\033[32m Exist \033[0m]";
 fi
 
 media_path="ci_test_platform/awcy_media/"
-echo -e "\033[1;36m Download media files to ${download_dir}/${media_path} ...\033[0m"
+echo -e "   download media files to \033[1;37m${download_dir}/${media_path}\033[0m ..."
 ftp_cmd="wget -nH -r -c ftp://ftp.cidanash.com:8021/${media_path} --ftp-user=ci_test_platform --ftp-password=cidana"
 (cd ${download_dir} && eval ${ftp_cmd})
 res=$?
 if [ ${res} -ne 0 ]; then
-    echo -e "\033[1;31mError: failed to download media file from ftp\033[0m";
+    echo -e "   download media files      --> [\033[31m Fail: ${res} \033[0m]"
     exit -3;
 fi
+echo -e "   download media files      --> [\033[32m Ok \033[0m]"
 
-echo -e "\033[1;36m Move media files ...\033[0m"
-echo "${download_dir}/${media_path} ==> ${awcy_media_dir}"
+# echo -e "   move media files to \033[1;37m${awcy_media_dir}\033[0m..."
+# echo "${download_dir}/${media_path} ==> ${awcy_media_dir}"
+msg="   move media files to \033[1;37m${awcy_media_dir}\033[0m      "
 mv ${download_dir}/${media_path}/* ${awcy_media_dir}
 res=$?
 if [ ${res} -ne 0 ]; then
-    echo -e "\033[1;31mError: failed to deploy media files\033[0m";
+    echo -e "${msg}--> [\033[31m Fail: ${res} \033[0m]"
     exit -3;
 fi
+echo -e "${msg}--> [\033[32m Ok \033[0m]"
 
-echo "Remove the temp download dir ${download_dir}"
+#-----------------------------------------------------------------------------
+#   deploy awcy cached source codes
+# 
+echo -e "\033[1;35m Step ${step}: Deploy awcy cache data ...\033[0m";
+((step += 1))
+
+# download
+data_src_file="awcy.tar.gz"
+data_src_path="ci_test_platform/awcy_data_src/"
+echo -e "   download \033[1;37m${data_src_file}\033[0m to \033[1;37m${download_dir}/${data_src_path}\033[0m ..."
+ftp_cmd="wget -nH -r -c ftp://ftp.cidanash.com:8021/${data_src_path} --ftp-user=ci_test_platform --ftp-password=cidana"
+(cd ${download_dir} && eval ${ftp_cmd})
+res=$?
+msg="  download \033[1;37m${data_src_file}\033[0m      -->"
+if [ ${res} -ne 0 ]; then
+    echo -e "${msg} [\033[31m Fail: ${res} \033[0m]"
+    exit -3;
+fi
+echo -e "${msg} [\033[32m Ok \033[0m]"
+
+# deploy to target data source dir
+awcy_cache=${download_dir}/${data_src_path}/${data_src_file}
+# echo "awcy_cache: ${awcy_cache}"
+msg="  awcy cache \033[1;37m${data_src_file}\033[0m   -->"
+if [ -f ${awcy_cache} ]; then 
+    echo -e "${msg} [\033[32m Found \033[0m]"
+    cmd="tar zxf ${awcy_cache} -C ${tar_root}"
+
+    echo -e "  ${cmd}";
+    eval ${cmd}
+    res=$?
+    msg1="  deploy awcy cache \033[1;37m${data_src_file}\033[0m   -->"
+    if [ ${res} -ne 0 ]; then
+        echo -e "${msg1} [\033[31m Fail, err:${res} \033[0m]"
+        exit -4
+    fi
+    echo -e "${msg1} [\033[32m OK \033[0m]"
+else
+    echo -e "${msg} [\033[31m Not Found \033[0m]"
+fi
+
+#-----------------------------------------------------------------------------
+#   deploy jenkins_home
+# 
+echo -e "\033[1;35m Step ${step}: Deploy jenkins_home ...\033[0m";
+((step += 1))
+
+#  download
+jks_home_file="jenkins_home.tar.gz"
+jks_home_path="ci_test_platform/jenkins_home"
+echo -e "   download \033[1;37m${jks_home_file}\033[0m to \033[1;37m${download_dir}/${jks_home_path}\033[0m ..."
+ftp_cmd="wget -nH -r -c ftp://ftp.cidanash.com:8021/${jks_home_path} --ftp-user=ci_test_platform --ftp-password=cidana"
+(cd ${download_dir} && eval ${ftp_cmd})
+res=$?
+msg="  download \033[1;37m${jks_home_file}\033[0m      -->"
+if [ ${res} -ne 0 ]; then
+    echo -e "${msg} [\033[31m Fail: ${res} \033[0m]"
+    exit -3;
+fi
+echo -e "${msg} [\033[32m Ok \033[0m]"
+
+deploy_target="${tar_root}/jenkins"
+msg="  deploy target dir \033[1;37m${deploy_target}\033[0m      "
+if [ ! -d ${deploy_target} ]; then
+    mkdir -p ${deploy_target}
+    res=$?
+    if [ ${res} -ne 0 ]; then
+        echo -e "${msg} --> [\033[31m Fail: ${res} \033[0m]"
+        exit -3;
+    fi
+    echo -e "${msg} --> [\033[32m Created \033[0m]"
+else
+    echo -e "${msg} --> [\033[32m Found \033[0m]"
+fi
+
+# deploy jenkins_home to target dir
+jks_home_tmp=${download_dir}/${jks_home_path}/${jks_home_file}
+# echo "jks_home_tmp: ${jks_home_tmp}"
+msg="  jenkins_home \033[1;37m${jks_home_file}\033[0m   -->"
+if [ -f ${jks_home_tmp} ]; then 
+    echo -e "${msg} [\033[32m Found \033[0m]"
+    cmd="tar zxf ${jks_home_tmp} -C ${deploy_target}"
+
+    echo -e "  ${cmd}";
+    eval ${cmd}
+    res=$?
+    msg1="  deploy jenkins_home \033[1;37m${jks_home_file}\033[0m   -->"
+    if [ ${res} -ne 0 ]; then
+        echo -e "${msg1} [\033[31m Fail, err:${res} \033[0m]"
+        exit -4
+    fi
+    echo -e "${msg1} [\033[32m OK \033[0m]"
+else
+    echo -e "${msg} [\033[31m Not Found \033[0m]"
+    exit -5
+fi
+
+chmod -R 777 ${deploy_target}
+
+# exit 0
+
+#-----------------------------------------------------------------------------
+# echo "remove the temp download dir ${download_dir}"
+msg=" delete temp download dir \033[1;37m${download_dir}\033[0m      --> "
 rm -rf ${download_dir}
+res=$?
+if [ ${res} -ne 0 ]; then
+    echo -e "${msg} [\033[31m Fail: ${res} \033[0m]"
+    exit -3;
+fi
+echo -e "${msg} [\033[32m Ok \033[0m]"
 
 # exit 0;
 
@@ -290,104 +447,223 @@ echo -e "\033[1;35m Step ${step}: Launch docker containers ...\033[0m";
 ((step += 1))
 
 #   Database Server
-echo -e "\033[1;36m Launch & Initialize Database server ...\033[0m"
+docker stop dbserver
+echo -e "\033[0;36m Launch & Initialize \033[1;36mDatabase server\033[0m ..."
 cmd="docker run --rm --name dbserver -v ${tar_root}/db:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=dbserver@cidana -d mysql:5.7 && docker run --rm --name dbinitializer --link dbserver:dbserver -e MYSQL_ROOT_PASSWORD=dbserver@cidana cidana/db_initializer"
 
-echo "${cmd}";
+echo "  ${cmd}";
 
-docker stop dbserver
 if [ $? -eq 0 ]; then
     sleep 2s
 fi
+
+msg="  \033[1;37mDatabase server\033[0m     "
 eval ${cmd}
 res=$?
 if [ ${res} -ne 0 ]; then
-    echo -e "\033[31mError: failed to launch db server, err:${res}\033[0m"
+    echo -e "${msg} --> [\033[31m Fail: ${res} \033[0m]"
     exit -4
 fi
+echo -e "${msg} --> [\033[32m Ok \033[0m]"
 
 #   API Service
-echo -e "\033[1;36m Launch API Service ...\033[0m"
+docker stop app_server
+echo -e "\033[0;36m Launch \033[1;36mAPI Service\033[0m ..."
 cmd="docker run -t --name app_server --rm --link dbserver:dbserver -p 8080:8080 -v ${tar_root}/data_service_api/conf/app.conf:/bin/data_service/conf/app.conf -v ${tar_root}/data_service_api/logs:/bin/data_service/logs -d cidana/data_service"
 echo "${cmd}";
 
-docker stop app_server
 if [ $? -eq 0 ]; then
     sleep 2s
 fi
+
+msg="  \033[1;37mAPI Service\033[0m     "
 eval ${cmd}
 res=$?
 if [ ${res} -ne 0 ]; then
-    echo -e "\033[31mError: failed to launch API Service, err:${res}\033[0m"
+    echo -e "${msg} --> [\033[31m Fail: ${res} \033[0m]"
     exit -4
 fi
+echo -e "${msg} --> [\033[32m Ok \033[0m]"
 
 #   PHP Web Service
-echo -e "\033[1;36m Launch PHP Web Service ...\033[0m"
+docker stop php-web
+
+echo -e "\033[0;36m Launch \033[1;36mPHP Web Service\033[0m ..."
 cmd="docker run --rm --name php-web -p 9000:9000 --link app_server:app_server -v ${tar_root}/web_ui/www/apiCfg.php:/usr/share/nginx/html/apiCfg.php:ro -d cidana/php_web_service"
 echo "${cmd}";
 
-docker stop php-web
 if [ $? -eq 0 ]; then
     sleep 2s
 fi
+
+msg="  \033[1;37mPHP Web Service\033[0m     "
 eval ${cmd}
 res=$?
 if [ ${res} -ne 0 ]; then
-    echo -e "\033[31mError: failed to launch PHP web service, err:${res}\033[0m"
+    echo -e "${msg} --> [\033[31m Fail: ${res} \033[0m]"
     exit -4
 fi
+echo -e "${msg} --> [\033[32m Ok \033[0m]"
 
 #   Nginx Web Service
-echo -e "\033[1;36m Launch Nginx Web Service ...\033[0m"
+docker stop nginx-server
+
+echo -e "\033[0;36m Launch \033[1;36mNginx Web Service\033[0m ..."
 cmd="docker run --rm --name nginx-server -p ${port}:80 --link php-web:phpfpm -v ${tar_root}/web_ui/www/apiCfg.php:/usr/share/nginx/html/apiCfg.php:ro -v ${tar_root}/web_ui/nginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro -v ${tar_root}/web_ui/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro -v ${tar_root}/web_ui/nginx/logs:/var/log/nginx -d cidana/nginx_web_service"
 echo "${cmd}";
 
-docker stop nginx-server
 if [ $? -eq 0 ]; then
     sleep 2s
 fi
+
+msg="  \033[1;37mNginx Web Service\033[0m     "
 eval ${cmd}
 res=$?
 if [ ${res} -ne 0 ]; then
-    echo -e "\033[31mError: failed to launch Nginx web service, err:${res}\033[0m"
+    echo -e "${msg} --> [\033[31m Fail: ${res} \033[0m]"
     exit -4
 fi
+echo -e "${msg} --> [\033[32m Ok \033[0m]"
 
-# AWCY service
-echo -e "\033[1;36m Launch AWCY Service ...\033[0m"
+# -----------------------------------------------------------------------------------
+#       AWCY service
+# 
+docker stop awcy_server
+
+echo -e "\033[0;36m Launch \033[1;36mAWCY Service\033[0m ..."
 cmd="docker run --rm --name awcy_server -p 3000:3000 -v ${tar_root}/awcy/data:/data -v ${tar_root}/awcy/media:/media --env MEDIAS_SRC_DIR=/media --env AWCY_API_KEY=cidana --env LOCAL_WORKER_ENABLED=true --env LOCAL_WORKER_SLOTS=4 -d cidana/awcy"
 
 echo "${cmd}";
 
-docker stop awcy_server
 if [ $? -eq 0 ]; then
     sleep 2s
 fi
+
+msg="  \033[1;37mAWCY Service\033[0m     "
 eval ${cmd}
 res=$?
 if [ ${res} -ne 0 ]; then
-    echo -e "\033[31mError: failed to launch awcy service, err:${res}\033[0m"
+    echo -e "${msg} --> [\033[31m Fail: ${res} \033[0m]"
     exit -4
 fi
+echo -e "${msg} --> [\033[32m Ok \033[0m]"
 
-# Jenkins service
-echo -e "\033[1;36m Launch Jenkins Service ...\033[0m"
-cmd="docker run --rm --name jenkins -p 8082:8080 -p 50000:50000 -d cidana/jenkins:deploy"
+fi  # if [ ${x} == 1 ]; then
+
+#=====================================================================================
+# 
+#       Jenkins service & accompanist web service
+# 
+#  Jenkins service
+echo -e "\033[36m Launch \033[1;36mJenkins Service\033[0m ..."
+cmd="docker run --rm --name jenkins --privileged=true -p 8082:8080 -p 50000:50000 -v ${tar_root}/jenkins/jenkins_home:/var/jenkins_home -v ${tar_root}/jenkins/jenkins-web/www:/var/tmp -d cidana/jenkins:deploy"
 echo "${cmd}";
 
 docker stop jenkins
 if [ $? -eq 0 ]; then
     sleep 2s
 fi
+
+msg="  \033[1;37mJenkins service\033[0m      "
 eval ${cmd}
 res=$?
 if [ ${res} -ne 0 ]; then
-    echo -e "\033[31mError: failed to launch Jenkins service, err:${res}\033[0m"
+    echo -e "${msg} --> [\033[31m Fail: ${res} \033[0m]"
     exit -4
 fi
+echo -e "${msg} --> [\033[32m Ok \033[0m]"
 
 
+# --- additional Jenkins-web service ---
+echo -e "\033[36m Deploy \033[1;36m additional Jenkins Web Service configurations\033[0m ..."
+
+# deploy nginx config files
+nginx_cfg_home=${shell_dir}/../3rd-party/jenkins-web/nginx
+nginx_cfg_file="conf/nginx.conf"
+nginx_cfg="${nginx_cfg_home}/${nginx_cfg_file}"
+msg="  ${nginx_cfg_home}/\033[1;37m${nginx_cfg_file}\033[0m   "
+if [ ! -f ${nginx_cfg} ]; then
+    echo -e "${msg} --> [\033[31m Not found \033[0m]"
+    exit -2
+fi
+echo -e "${msg} --> [\033[32m found \033[0m]"
+
+nginx_cfg_file="conf.d/default.conf"
+nginx_cfg="${nginx_cfg_home}/${nginx_cfg_file}"
+msg="  ${nginx_cfg_home}/\033[1;37m${nginx_cfg_file}\033[0m   "
+if [ ! -f ${nginx_cfg} ]; then
+    echo -e "${msg} --> [\033[31m Not found \033[0m]"
+    exit -2
+fi
+echo -e "${msg} --> [\033[32m found \033[0m]"
+
+jks_web="jenkins-web"
+tar_dir="${tar_root}/jenkins" #${jks_web}/"
+if [ ! -d ${tar_dir} ]; then
+    mkdir -p ${tar_dir}
+    err=$?
+    msg="  create \033[1;37m${tar_dir}\033[0m    "
+    if [ ${err} -ne 0 ]; then
+        echo -e "${msg} --> [\033[31m Fail: ${err} \033[0m]";
+        exit -2
+    fi
+    echo -e "${msg} --> [\033[32m OK \033[0m]";
+else
+    echo -e "  \033[1;37m${tar_dir}\033[0m    --> [\033[32m Found \033[0m]";
+fi
+
+msg="  copy dir ${shell_dir}/../\033[1;37m3rd-party/${jks_web}/\033[0m to \033[1;37m ${tar_root}/jenkins/${jks_web}/\033[0m   "
+cp -r ${shell_dir}/../3rd-party/${jks_web} ${tar_dir}
+err=$?
+if [ ${err} -ne 0 ]; then
+    echo -e "${msg} --> [\033[1;31m Fail: ${err} \033[0m]";
+    exit -2
+fi
+echo -e "${msg} --> [\033[1;32m Ok \033[0m]";
+
+# -- jenkins php service --
+docker stop jks-php
+if [ $? -eq 0 ]; then
+    sleep 2s
+fi
+echo -e "\033[0;36m Launch \033[1;36mJenkins Php Service\033[0m ..."
+
+tar_dir="${tar_root}/jenkins/${jks_web}/"
+cmd="docker run --rm --name jks-php -p 9001:9000 -v ${tar_dir}/www:/usr/share/nginx/html:ro -d php:5.6-fpm"
+echo -e "${cmd}";
+
+msg=" \033[1;37m Jenkins Php Service \033[0m   "
+eval ${cmd}
+res=$?
+if [ ${res} -ne 0 ]; then
+    echo -e "${msg} --> [\033[31m Fail: ${res} \033[0m]";
+    exit -4
+fi
+echo -e "${msg} --> [\033[32m OK \033[0m]";
+
+# jenkins Nginx service
+docker stop jks-nginx
+if [ $? -eq 0 ]; then
+    sleep 2s
+fi
+echo -e "\033[0;36m Launch \033[1;36mJenkins Nginx Service\033[0m ..."
+
+cmd="docker run --rm --name jks-nginx -p 8084:80 --link jks-php:phpfpm-jks -v ${tar_dir}/www:/usr/share/nginx/html:ro -v ${tar_dir}/nginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro -v ${tar_dir}/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro -v ${tar_dir}/nginx/logs:/var/log/nginx -d nginx:1.17"
+echo -e "${cmd}";
+
+msg=" \033[1;37m Jenkins Nginx Service \033[0m   "
+eval ${cmd}
+res=$?
+if [ ${res} -ne 0 ]; then
+    echo -e "${msg} --> [\033[1;31m Fail: ${res} \033[0m]";
+    exit -4
+fi
+echo -e "${msg} --> [\033[32m OK \033[0m]";
+
+#=====================================================================================
+# 
+#       Finish
+# 
 echo -e "\n \033[42;30m --- Setup & Launch finish successfuly ! --- \033[0m"
 
 cfgfile=${tar_root}/data_service_api/conf/app.conf
