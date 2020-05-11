@@ -17,7 +17,7 @@ Before actual deploy, please make sure your test machine meets our requirements
 #### - OS
   `CTP` runs on `Linux` platform, like Ubuntu, CentOS. It could be deployed either in `real linux machine` or `virtual linux machine`
   * Ubuntu 16.04 or above (Recommend)
-  * CentOS 8.1 or above
+  * CentOS 7 or above
 
 #### - Git
   Git 2.7 or above
