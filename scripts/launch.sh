@@ -327,6 +327,60 @@ fi
 echo -e "${msg}--> [\033[32m Ok \033[0m]"
 
 #-----------------------------------------------------------------------------
+#   deploy awcy mock data
+# 
+awcy_data_dir=${tar_root}/awcy/data/
+echo -e "\033[1;36mdeploy mock data to ${awcy_data_dir} ...\033[0m"
+if [ ! -d ${awcy_data_dir} ]; then
+    echo "${awcy_data_dir} not exist, create ";
+    mkdir -p ${awcy_data_dir}
+fi
+
+download_dir=${tar_root}/download
+echo -e "\033[1;35m Step ${step}: Deploy awcy mock data ...\033[0m";
+((step += 1))
+
+if [ ! -d ${download_dir} ]; then
+    echo "${download_dir} not exist, create ";
+    mkdir -p ${download_dir}
+fi
+
+mock_src_path="ci_test_platform/awcy_mock_data/"
+echo -e "\033[1;36m Download mock data to ${download_dir}/${mock_src_path} \033[0m"
+ftp_cmd="wget -nH -r -c ftp://ftp.cidanash.com:8021/${mock_src_path} --ftp-user=ci_test_platform --ftp-password=cidana"
+(cd ${download_dir} && eval ${ftp_cmd})
+res=$?
+if [ ${res} -ne 0 ]; then
+    echo -e "\033[1;31mError: failed to download mock data from ftp\033[0m";
+    exit -3;
+fi
+
+echo -e "\033[1;36m unzip mock data\033[0m"
+unzip="tar zxf ${download_dir}/${mock_src_path}/awcy_demo_data.tar.gz"
+# echo "========>" $unzip
+(cd ${download_dir} && eval ${unzip})
+res=$?
+if [ ${res} -ne 0 ]; then
+    echo -e "\033[1;31mError: failed to unzip the mock data\033[0m";
+    exit -3;
+fi
+
+echo -e "\033[1;36m Move mock data \033[0m"
+echo "${download_dir}/${media_path} ==> ${awcy_data_dir}"
+cp -r ${download_dir}/awcy_demo_data/* ${awcy_data_dir}
+res=$?
+if [ ${res} -ne 0 ]; then
+    echo -e "\033[1;31mError: failed to deploy media files\033[0m";
+    exit -3;
+fi
+
+
+# echo "Remove the temp download dir ${download_dir}"
+# rm -rf ${download_dir}
+
+# exit 0;
+
+#-----------------------------------------------------------------------------
 #   deploy awcy cached source codes
 # 
 echo -e "\033[1;35m Step ${step}: Deploy awcy cache data ...\033[0m";
@@ -422,8 +476,6 @@ else
     echo -e "${msg} [\033[31m Not Found \033[0m]"
     exit -5
 fi
-
-chmod -R 777 ${deploy_target}
 
 # exit 0
 
@@ -659,6 +711,8 @@ if [ ${res} -ne 0 ]; then
     exit -4
 fi
 echo -e "${msg} --> [\033[32m OK \033[0m]";
+
+chmod -R 777 ${deploy_target}
 
 #=====================================================================================
 # 
